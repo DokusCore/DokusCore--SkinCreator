@@ -11,7 +11,7 @@ RegisterNUICallback('saveSkin', function(data, cb)
   SetCamActive(cam, false)
   DestroyCam(cam, true)
   local Data = TSC('DokusCore:S:Core:GetCoreUserData')
-  local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})
+  local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})[1]
   TSC('DokusCore:S:Core:DB:UpdateViaSteamAndCharID', {DB.Characters.SetSkin, 'Skin', encode, Data.Steam, Data.CharID})
   DestroyAllCams()
   IsMenuOpen = false

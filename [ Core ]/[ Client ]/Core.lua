@@ -43,7 +43,7 @@ RegisterCommand("skin", function(source, args, rawCommand)
   if (string.lower(args[1]) == 'menu') then TriggerEvent("DokusCore:SkinCreator:C:OpenMenu", Ped, pCoords) end
   if (string.lower(args[1]) == 'load') then
     local Data = TSC('DokusCore:S:Core:GetCoreUserData')
-    local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})
+    local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})[1]
     if (User.Skin == nil) then return TriggerEvent('DokusCore:C:Core:Notify', "You've no skin to load! Please create a skin first with /skin menu", 'topRight', 5000) end
     local Skin = json.decode(User.Skin)
     TriggerEvent("DokusCore:SkinCreator:C:SetSkin", Skin)
