@@ -7,7 +7,7 @@ function ShowSkinCreator(Bool) SetNuiFocus(Bool, Bool) SendNUIMessage({ openSkin
 function modelrequest( model ) CreateThread(function() RequestModel( model ) end) end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-function Note(txt, pos, time)
+function Notify(txt, pos, time)
   TriggerEvent("pNotify:SendNotification", {
     text = "<height='40' width='40' style='float:left; margin-bottom:10px; margin-left:20px;' />"..txt,
     type = "success", timeout = time, layout = pos, queue = "right"

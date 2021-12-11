@@ -10,18 +10,20 @@ RegisterNUICallback('saveSkin', function(data, cb)
   DisplayRadar(true)
   SetCamActive(cam, false)
   DestroyCam(cam, true)
-  local Data = TSC('DokusCore:S:Core:GetCoreUserData')
-  local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})[1]
-  TSC('DokusCore:S:Core:DB:UpdateViaSteamAndCharID', {DB.Characters.SetSkin, 'Skin', encode, Data.Steam, Data.CharID})
+  local Data = TSC('DokusCore:Core:GetCoreUserData')
+  local User = TSC('DokusCore:Core:DBGet:Characters', { 'User', 'Single', { Data.Steam, Data.CharID } }).Result[1]
+  TSC('DokusCore:Core:DBSet:Characters', { 'Skin', { Data.Steam, Data.CharID, encode } })
   DestroyAllCams()
   IsMenuOpen = false
   ShowSkinCreator(false)
   SetPlayerInvincible(PlayerId(), false)
+  Wait(5000)
+  if not (Welcomed) then Welcomed = true TriggerEvent('DokusCore:Core:ShowTopNote', 'Welcome', _ServerName) end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 RegisterNUICallback('updateBody', function(data, cb)
-  TriggerEvent("DokusCore:SkinCreator:C:UpdateSkin", data)
+  TriggerEvent("DokusCore:SkinCreator:UpdateSkin", data)
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

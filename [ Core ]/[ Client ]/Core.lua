@@ -15,7 +15,12 @@ ped_sex = 1
 torso = nil
 legs = nil
 headingss = 300.00
-
+Welcomed = false
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+Low = string.lower
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 BODY_TYPES = { 32611963, - 20262001, - 369348190, - 1241887289, 61606861 }
 features = {
   0x84D6, 0x3303, 0x2FF9, 0x4AD1, 0xC04F, 0xB6CE, 0x2844, 0xED30, 0x6A0B, 0xABCF, 0x358D,
@@ -36,64 +41,75 @@ features_name = {
 }
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-RegisterCommand("skin", function(source, args, rawCommand)
-  local source = source
-  local Ped = PlayerPedId()
-  local pCoords = GetEntityCoords(Ped)
-  if (string.lower(args[1]) == 'menu') then TriggerEvent("DokusCore:SkinCreator:C:OpenMenu", Ped, pCoords) end
-  if (string.lower(args[1]) == 'load') then
-    local Data = TSC('DokusCore:S:Core:GetCoreUserData')
-    local User = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', {DB.Characters.Get, Data.Steam, Data.CharID})[1]
-    if (User.Skin == nil) then return TriggerEvent('DokusCore:C:Core:Notify', "You've no skin to load! Please create a skin first with /skin menu", 'topRight', 5000) end
-    local Skin = json.decode(User.Skin)
-    TriggerEvent("DokusCore:SkinCreator:C:SetSkin", Skin)
+CreateThread(function()
+  if (_Modules.SkinCreator) then
+    RegisterCommand("skin", function(source, args, rawCommand)
+      local source = source
+      local PedID = PlayerPedId()
+      local pCoords = GetEntityCoords(PedID)
+      if (Low(args[1]) == 'menu') then TriggerEvent("DokusCore:SkinCreator:OpenMenu", PedID, pCoords) end
+      if (Low(args[1]) == 'load') then
+        local Data = TSC('DokusCore:Core:GetCoreUserData')
+        local User = TSC('DokusCore:Core:DBGet:Characters', { 'User', 'Single', { Data.Steam, Data.CharID } }).Result[1]
+        if (User.Skin == nil) then return Notify("You've no skin to load! Please create a skin first with /skin menu") end
+        local Skin = json.decode(User.Skin)
+        TriggerEvent("DokusCore:SkinCreator:SetSkin", Skin)
+      end
+    end)
   end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-RegisterNetEvent('DokusCore:SkinCreator:C:OpenMenu')
-AddEventHandler('DokusCore:SkinCreator:C:OpenMenu', function(Ped, pCoords)
-  SetEntityCoords(Ped, pCoords[1], pCoords[2], (pCoords[3] - 1.0))
-  SetEntityHeading(Ped, 230.0)
-  FreezeEntityPosition(Ped, true)
-  ShowSkinCreator(true)
-  IsMenuOpen = true
-  camera(2.8, 0.2)
-  SetPlayerInvincible(PlayerId(), true)
-  Light(pCoords)
+RegisterNetEvent('DokusCore:SkinCreator:OpenMenu')
+AddEventHandler('DokusCore:SkinCreator:OpenMenu', function(PedID, pCoords)
+  if (_Modules.SkinCreator) then
+    SetEntityCoords(PedID, pCoords[1], pCoords[2], (pCoords[3] - 1.0))
+    SetEntityHeading(PedID, 230.0)
+    FreezeEntityPosition(PedID, true)
+    Notify('Switch gender first to prevent your character getting spaghetti arms!', 'TopLeft', 5000)
+    Wait(5000)
+    Notify('You can always reopen the skin menu via the character menu with TAB', 'TopLeft', 10000)
+    ShowSkinCreator(true)
+    IsMenuOpen = true
+    camera(2.8, 0.2)
+    SetPlayerInvincible(PlayerId(), true)
+    Light(pCoords)
+  end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-Citizen.CreateThread(function()
-  for i, v in pairs(cloth_hash_names) do
-  if v.category_hashname == "BODIES_LOWER"
-  or v.category_hashname == "BODIES_UPPER"
-  or v.category_hashname == "heads"
-  or v.category_hashname == "hair"
-  or v.category_hashname == "teeth"
-  or v.category_hashname == "eyes"
-  or v.category_hashname == "beards_chin"
-  or v.category_hashname == "beards_chops"
-  or v.category_hashname == "beard" then
-    if v.ped_type == "female" and v.is_multiplayer and v.hashname ~= "" then
-      if list_f[v.category_hashname] == nil then
-        list_f[v.category_hashname] = {}
-      end
-      table.insert(list_f[v.category_hashname], v.hash)
-    elseif v.ped_type == "male" and v.is_multiplayer and v.hashname ~= "" then
-      if list[v.category_hashname] == nil then
-        list[v.category_hashname] = {}
-      end
+CreateThread(function()
+  if (_Modules.SkinCreator) then
+    for i, v in pairs(cloth_hash_names) do
+    if v.category_hashname == "BODIES_LOWER"
+    or v.category_hashname == "BODIES_UPPER"
+    or v.category_hashname == "heads"
+    or v.category_hashname == "hair"
+    or v.category_hashname == "teeth"
+    or v.category_hashname == "eyes"
+    or v.category_hashname == "beards_chin"
+    or v.category_hashname == "beards_chops"
+    or v.category_hashname == "beard" then
+      if v.ped_type == "female" and v.is_multiplayer and v.hashname ~= "" then
+        if list_f[v.category_hashname] == nil then
+          list_f[v.category_hashname] = {}
+        end
+        table.insert(list_f[v.category_hashname], v.hash)
+      elseif v.ped_type == "male" and v.is_multiplayer and v.hashname ~= "" then
+        if list[v.category_hashname] == nil then
+          list[v.category_hashname] = {}
+        end
 
-      table.insert(list[v.category_hashname], v.hash)
+        table.insert(list[v.category_hashname], v.hash)
+      end
     end
   end
-end
+  end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-RegisterNetEvent('DokusCore:SkinCreator:C:SetSkin')
-AddEventHandler('DokusCore:SkinCreator:C:SetSkin', function(_data, clothes)
+RegisterNetEvent('DokusCore:SkinCreator:SetSkin')
+AddEventHandler('DokusCore:SkinCreator:SetSkin', function(_data, clothes)
   Citizen.CreateThread(function()
     local _clothes = clothes
     local _target = PlayerPedId()
@@ -131,8 +147,8 @@ AddEventHandler('DokusCore:SkinCreator:C:SetSkin', function(_data, clothes)
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-RegisterNetEvent('DokusCore:SkinCreator:C:UpdateSkin')
-AddEventHandler('DokusCore:SkinCreator:C:UpdateSkin', function(data)
+RegisterNetEvent('DokusCore:SkinCreator:UpdateSkin')
+AddEventHandler('DokusCore:SkinCreator:UpdateSkin', function(data)
   if ped_sex ~= tonumber(data.sex) and data.sex ~= nil then
     ped_sex = tonumber(data.sex)
     local model = "mp_male"
@@ -158,5 +174,59 @@ AddEventHandler('DokusCore:SkinCreator:C:UpdateSkin', function(data)
     LoadOverlays(PlayerPedId(), data)
   end)
 end)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
