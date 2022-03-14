@@ -1,7 +1,7 @@
 ---
 <p align="center">
   <img width="600" height="200" src="https://user-images.githubusercontent.com/49053928/111937011-2e9b8080-8ac7-11eb-914a-a0d94380d611.gif"><br>
- <b>DokusCore Settings Menu (v1.3.0) [BETA]</b> - A Players Settings System for DokusCore!.
+ <b>DokusCore Skin Creator (v1.3.1) [BETA]</b> - A plugin to create your characters skin!.
 </p>
 
 ---
@@ -11,8 +11,14 @@ Make sure that DokusCore is started before this plugin!
 
 ---
 # Installation
-Simply extract the `DokusCore--SettingsMenu` into your `resources` folder, and <br>
-start it via `ensure DokusCore--SettingsMenu`.
+Simply extract the `DokusCore--SkinCreator` into your `resources` folder, and <br>
+start it via `ensure DokusCore--SkinCreator`.
+
+---
+# Install DokusCore withing 10 minutes!
+Simply [Download](https://github.com/DokusCore/Server-Prebuild) the prebuild server that has the server and all its features <br>
+pre-Installed. Simply add your server artifacts and configure the cfg files, <br>
+inject the database and you're done!
 
 ---
 # Plugin Information
