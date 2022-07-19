@@ -1,19 +1,7 @@
 --------------------------------------------------------------------------------
----------------------------------- DokusCore -----------------------------------
+----------------------------------- DevDokus -----------------------------------
 --------------------------------------------------------------------------------
-function ShowSkinCreator(Bool) SetNuiFocus(Bool, Bool) SendNUIMessage({ openSkinCreator = Bool }) end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function modelrequest( model ) CreateThread(function() RequestModel( model ) end) end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function Notify(txt, pos, time)
-  TriggerEvent("pNotify:SendNotification", {
-    text = "<height='40' width='40' style='float:left; margin-bottom:10px; margin-left:20px;' />"..txt,
-    type = "success", timeout = time, layout = pos, queue = "right"
-  })
-end
---------------------------------------------------------------------------------
+----------------------- I feel a disturbance in the force ----------------------
 --------------------------------------------------------------------------------
 function FrameReady()
   local Data = TCTCC('DokuCore:Sync:Get:CoreData')
@@ -27,405 +15,327 @@ function UserInGame()
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-function destory()
-  SetCamActive(cam, false)
-  RenderScriptCams(false, true, 500, true, true)
-  DisplayHud(true)
-  DisplayRadar(true)
-  DestroyAllCams(true)
-  cam = nil
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function Light(Coords)
-  while IsMenuOpen do Wait(1)
-    DrawLightWithRange(Coords.x + 1, Coords.y + 1, Coords.z + 1, 255, 255, 255, 2.5, 10.0)
-  end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LModel(target, model)
-  local _model = GetHashKey(model)
-  while not HasModelLoaded( _model ) do
-    Wait(1)
-    modelrequest( _model )
-  end
-  Citizen.Wait(100)
-  Citizen.InvokeNative(0xED40380076A31506, PlayerId(), _model, false)
-  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 0, 0)
+function FixIssues(ID, Gender)
+  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ID, 0, 0)
+  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ID) do Wait(0) end
+  Citizen.InvokeNative(0x0BFA1BD465CDFEFD, ID) -- ResetPedComponents
 
-  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) do
-    Wait(1)
+  if (Up(Gender) == 'MP_MALE') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 4132004136, false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 174153218,  false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 4042989040, false, true, true) -- ApplyShopItemToPed
+  elseif (Up(Gender) == 'MP_FEMALE') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 2458758467, false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 4040004332, false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, 2636455686, false, true, true) -- ApplyShopItemToPed
   end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function camera(zoom, offset)
-  DestroyAllCams(true)
-  local playerPed = PlayerPedId()
-  local coords = GetEntityCoords(playerPed)
-  local heading = 45.0
-  local zoomOffset = zoom
-  local camOffset = offset
-  local angle = heading * math.pi / 180.0
-  local theta = {
-    x = math.cos(angle),
-    y = math.sin(angle)
-  }
-  local pos = {
-    x = coords.x + (zoomOffset * theta.x),
-    y = coords.y + (zoomOffset * theta.y)
-  }
-  local angleToLook = heading - 140.0
-  if angleToLook > 360 then
-    angleToLook = angleToLook - 360
-  elseif angleToLook < 0 then
-    angleToLook = angleToLook + 360
-  end
-  angleToLook = angleToLook * math.pi / 180.0
-  local thetaToLook = {
-    x = math.cos(angleToLook),
-    y = math.sin(angleToLook)
-  }
-  local posToLook = {
-    x = coords.x + (zoomOffset * thetaToLook.x),
-    y = coords.y + (zoomOffset * thetaToLook.y)
-  }
-  local add = (1.3 * zoom)
-  SetEntityHeading(playerPed, headingss)
-  cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", pos.x, pos.y, coords.z + camOffset, 300.00, 0.00, 0.00, 40.00, false, 0)
-  PointCamAtCoord(cam, posToLook.x - add, posToLook.y, coords.z + camOffset)
-  SetCamActive(cam, true)
-  RenderScriptCams(true, true, 500, true, true)
-  DisplayHud(false)
-  DisplayRadar(false)
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function toggleOverlayChange(_name, _visibility, _tx_id, _tx_normal, _tx_material, _tx_color_type, _tx_opacity, _tx_unk, _palette_id, _palette_color_primary, _palette_color_secondary, _palette_color_tertiary, _var, _opacity, _targets)
-  Citizen.CreateThread(function()
-    local name = _name
-    local visibility = _visibility
-    local tx_id = _tx_id
-    local tx_normal = _tx_normal
-    local tx_material = _tx_material
-    local tx_color_type = _tx_color_type
-    local tx_opacity = _tx_opacity
-    local tx_unk = _tx_unk
-    local palette_id = _palette_id
-    local palette_color_primary = _palette_color_primary
-    local palette_color_secondary = _palette_color_secondary
-    local palette_color_tertiary = _palette_color_tertiary
-    local var = _var
-    local opacity = _opacity
-    local target = _targets
 
-    for k, v in pairs(overlay_all_layers) do
-      if v.name == name then
-        v.visibility = visibility
-        if visibility ~= 0 then
-          v.tx_normal = tx_normal
-          v.tx_material = tx_material
-          v.tx_color_type = tx_color_type
-          v.tx_opacity = tx_opacity
-          v.tx_unk = tx_unk
-          if tx_color_type == 0 then
-            v.palette = color_palettes[palette_id][1]
-            v.palette_color_primary = palette_color_primary
-            v.palette_color_secondary = palette_color_secondary
-            v.palette_color_tertiary = palette_color_tertiary
-          end
-          if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
-            v.var = var
-            v.tx_id = overlays_info[name][1].id
-          else
-            v.var = 0
-            v.tx_id = overlays_info[name][tx_id].id
-          end
-          v.opacity = opacity
-        end
-      end
-    end
-    local ped = target
-    if IsPedMale(ped) then
-      current_texture_settings = texture_types["male"]
+  -- Execute on all
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x1D4C528A, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x3F1F01E5, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0xDA0E2C55, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0x704C908E9C405136, ID) -- N_0x704c908e9c405136
+  Citizen.InvokeNative(0xCC8CA3E88256E58F, ID, 0, 1, 1, 1, 0) --UpdatePedVariation
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function SetPedSkin(ID, Gender, Skin)
+  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ID, 0, 0)
+  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ID) do Wait(0) end
+  Citizen.InvokeNative(0x0BFA1BD465CDFEFD, ID) -- ResetPedComponents
+
+  if (Up(Gender) == 'MP_MALE') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Torso), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Legs), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Head), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Beard), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Hair), false, true, true) -- ApplyShopItemToPed
+  elseif (Up(Gender) == 'MP_FEMALE') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Torso), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Legs), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Head), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Hair), false, true, true) -- ApplyShopItemToPed
+  end
+
+  -- Execute on all
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x1D4C528A, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x3F1F01E5, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0xDA0E2C55, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0x704C908E9C405136, ID) -- N_0x704c908e9c405136
+  Citizen.InvokeNative(0xCC8CA3E88256E58F, ID, 0, 1, 1, 1, 0) --UpdatePedVariation
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function SetNPCMenuSkins(ID, Gender)
+  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ID, 0, 0)
+  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ID) do Wait(0) end
+  Citizen.InvokeNative(0x0BFA1BD465CDFEFD, ID) -- ResetPedComponents
+
+  if (Up(Gender) == 'MP_Male') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Male['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Male['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Male['heads'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Male['eyes'], false, true, true) -- ApplyShopItemToPed
+  else
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Female['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Female['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Female['heads'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, _Skins.Looks.Default.Female['eyes'], false, true, true) -- ApplyShopItemToPed
+  end
+
+  -- Execute on all
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x1D4C528A, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0x3F1F01E5, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, ID, 0xDA0E2C55, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0x704C908E9C405136, ID) -- N_0x704c908e9c405136
+  Citizen.InvokeNative(0xCC8CA3E88256E58F, ID, 0, 1, 1, 1, 0) --UpdatePedVariation
+
+  SetModelAsNoLongerNeeded(Gender)
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function SetSkinData()
+  MaleData   = TSC('DokusCore:Core:DBGet:Data:Skins', { 'Male', 'All' }).Result
+  FemaleData = TSC('DokusCore:Core:DBGet:Data:Skins', { 'Female', 'All' }).Result
+  for k,v in pairs(MaleData)   do if (v.Type == 'heads')        then Tabi(MaleHeads, v)    end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'BODIES_UPPER') then Tabi(MaleTorsos, v)   end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'BODIES_LOWER') then Tabi(MaleLegs, v)     end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'eyes')         then Tabi(MaleEyes, v)     end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'teeth')        then Tabi(MaleTeeth, v)    end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'hair')         then Tabi(MaleHairs, v)    end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'beard')        then Tabi(MaleBeards, v)   end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'Mustache')     then Tabi(MaleMustache, v) end end
+  for k,v in pairs(MaleData)   do if (v.Type == 'Beardstache')  then Tabi(Beardstache, v)  end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'heads')        then Tabi(FemaleHeads, v)  end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'BODIES_UPPER') then Tabi(FemaleTorsos, v) end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'BODIES_LOWER') then Tabi(FemaleLegs, v)   end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'eyes')         then Tabi(FemaleEyes, v)   end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'teeth')        then Tabi(FemaleTeeth, v)  end end
+  for k,v in pairs(FemaleData) do if (v.Type == 'hair')         then Tabi(FemaleHairs, v)  end end
+  return true
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function CreateNPCs()
+  for k,v in pairs(_Skins.PEDs) do
+    local rMale   = _Skins.Outfits.Male[math.random(#_Skins.Outfits.Male)]
+    local rFemale = _Skins.Outfits.Female[math.random(#_Skins.Outfits.Female)]
+    LoadModel(v.Gender)
+    local cPed = CreatePed(v.Gender, v.x, v.y, v.z, v.h, false, 0)
+    Tabi(NPCs, cPed)
+    Citizen.InvokeNative(0xED40380076A31506, cPed, v.Gender, false) --SetPlayerModel
+    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, cPed, 0, 0) --EquipPedOutfitPreset
+    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, cPed) do Wait(0) end -- IsPedReadyToRender
+    Citizen.InvokeNative(0x0BFA1BD465CDFEFD, cPed) -- ResetPedComponents
+
+    if IsPedMale(cPed) then
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['heads'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['eyes'], false, true, true) -- ApplyShopItemToPed
     else
-      current_texture_settings = texture_types["female"]
-    end
-    if textureId ~= -1 then
-      Citizen.InvokeNative(0xB63B9178D0F58D82, textureId) -- reset texture
-      Citizen.InvokeNative(0x6BEFAA907B076859, textureId) -- remove texture
-    end
-    textureId = Citizen.InvokeNative(0xC5E7204F322E49EB, current_texture_settings.albedo, current_texture_settings.normal, current_texture_settings.material); -- create texture
-    for k, v in pairs(overlay_all_layers) do
-      if v.visibility ~= 0 then
-        local overlay_id = Citizen.InvokeNative(0x86BB5FF45F193A02, textureId, v.tx_id, v.tx_normal, v.tx_material, v.tx_color_type, v.tx_opacity, v.tx_unk); -- create overlay
-        if v.tx_color_type == 0 then
-          Citizen.InvokeNative(0x1ED8588524AC9BE1, textureId, overlay_id, v.palette); -- apply palette
-          Citizen.InvokeNative(0x2DF59FFE6FFD6044, textureId, overlay_id, v.palette_color_primary, v.palette_color_secondary, v.palette_color_tertiary) -- apply palette colours
-        end
-        Citizen.InvokeNative(0x3329AAE2882FC8E4, textureId, overlay_id, v.var); -- apply overlay variant
-        Citizen.InvokeNative(0x6C76BC24F8BB709A, textureId, overlay_id, v.opacity); -- apply overlay opacity
-      end
-    end
-    while not Citizen.InvokeNative(0x31DC8D3F216D8509, textureId) do -- wait till texture fully loaded
-      Citizen.Wait(0)
-    end
-    Citizen.InvokeNative(0x0B46E25761519058, ped, GetHashKey("heads"), textureId) -- apply texture to current component in category "heads"
-    Citizen.InvokeNative(0x92DAABA2C1C10B0E, textureId) -- update texture
-    Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, 0, 1, 1, 1, false); -- refresh ped components
-  end)
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadBoody(target, data, update)
-  if IsPedMale(target) then
-    if tonumber(data.skincolor) == 1 then
-      torso = list["BODIES_UPPER"][1]
-      legs = list["BODIES_LOWER"][1]
-      texture_types["male"].albedo = GetHashKey("mp_head_mr1_sc08_c0_000_ab")
-    elseif tonumber(data.skincolor) == 2 then
-      torso = list["BODIES_UPPER"][10]
-      legs = list["BODIES_LOWER"][10]
-      texture_types["male"].albedo = GetHashKey("MP_head_mr1_sc03_c0_000_ab")
-    elseif tonumber(data.skincolor) == 3 then
-      torso = list["BODIES_UPPER"][3]
-      legs = list["BODIES_LOWER"][3]
-      texture_types["male"].albedo = GetHashKey("head_mr1_sc02_rough_c0_002_ab")
-    elseif tonumber(data.skincolor) == 4 then
-      torso = list["BODIES_UPPER"][11]
-      legs = list["BODIES_LOWER"][11]
-      texture_types["male"].albedo = GetHashKey("head_mr1_sc04_rough_c0_002_ab")
-    elseif tonumber(data.skincolor) == 5 then
-      torso = list["BODIES_UPPER"][8]
-      legs = list["BODIES_LOWER"][8]
-      texture_types["male"].albedo = GetHashKey("MP_head_mr1_sc01_c0_000_ab")
-    elseif tonumber(data.skincolor) == 6 then
-      torso = list["BODIES_UPPER"][30]
-      legs = list["BODIES_LOWER"][30]
-      texture_types["male"].albedo = GetHashKey("MP_head_mr1_sc05_c0_000_ab")
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['heads'], false, true, true) -- ApplyShopItemToPed
+      Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['eyes'], false, true, true) -- ApplyShopItemToPed
     end
 
-  else
-    if tonumber(data.skincolor) == 1 then
-      torso = list_f["BODIES_UPPER"][1]
-      legs = list_f["BODIES_LOWER"][1]
-      texture_types["female"].albedo = GetHashKey("mp_head_fr1_sc08_c0_000_ab")
-    elseif tonumber(data.skincolor) == 2 then
-      torso = list_f["BODIES_UPPER"][10]
-      legs = list_f["BODIES_LOWER"][10]
-      texture_types["female"].albedo = GetHashKey("MP_head_fr1_sc03_c0_000_ab")
-    elseif tonumber(data.skincolor) == 3 then
-      torso = list_f["BODIES_UPPER"][3]
-      legs = list_f["BODIES_LOWER"][3]
-      texture_types["female"].albedo = GetHashKey("MP_head_fr1_sc03_c0_000_ab")
-    elseif tonumber(data.skincolor) == 4 then
-      torso = list_f["BODIES_UPPER"][11]
-      legs = list_f["BODIES_LOWER"][11]
-      texture_types["female"].albedo = GetHashKey("head_fr1_sc04_rough_c0_002_ab")
-    elseif tonumber(data.skincolor) == 5 then
-      torso = list_f["BODIES_UPPER"][8]
-      legs = list_f["BODIES_LOWER"][8]
-      texture_types["female"].albedo = GetHashKey("MP_head_fr1_sc01_c0_000_ab")
-    elseif tonumber(data.skincolor) == 6 then
-      torso = list_f["BODIES_UPPER"][30]
-      legs = list_f["BODIES_LOWER"][30]
-      texture_types["female"].albedo = GetHashKey("MP_head_fr1_sc05_c0_000_ab")
-    end
-
-  end
-  Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(torso), false, true, true)
-  Wait(10)
-  Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(legs), false, true, true)
-  Wait(10)
-  if not update then
-    Wait(100)
-  end
-  Citizen.InvokeNative(0x704C908E9C405136, target)
-  Citizen.InvokeNative(0xCC8CA3E88256E58F, target, 0, 1, 1, 1, 0)
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadHair(target, data)
-  if tonumber(data.hair) > 1 then
-    if IsPedMale(target) then
-      local hair = list["hair"][tonumber(data.hair)]
-      Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(hair), false, true, true)
-      --[[if tonumber(data.beard) > 1 then
-        local beard = list["beard"][tonumber(data.beard)]
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(beard), false, true, true)
-      end]]
-
+    Citizen.InvokeNative(0x704C908E9C405136, cPed) -- N_0x704c908e9c405136
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, cPed) --PlaceObjectOnGroundProperly
+    NetworkGhosting(cPed, true)
+    SetVehicleHasBeenOwnedByPlayer(cPed, true)
+    if (Low(v.Gender) == 'mp_female') then
+      SetPedOutfitPreset(cPed, rFemale)
+      Citizen.InvokeNative(0xD710A5007C2AC539, cPed, 0x9925C067, 0) --RemoveTagFromMetaPed
+      Citizen.InvokeNative(0xCC8CA3E88256E58F, cPed, 0, 1, 1, 1, 0) --UpdatePedVariation
     else
-      local hair = list_f["hair"][tonumber(data.hair)]
-      Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(hair), false, true, true)
-    end
-  end
-  if IsPedMale(target) then
-    if tonumber(data.beard) > 1 then
-       local beard = list["beard"][tonumber(data.beard)]
- Citizen.InvokeNative(0xD3A7B003ED343FD9 , target,  tonumber(beard), false, true, true)
-    end
-end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadHead(target, data)
-  if IsPedMale(target) then
-    local face = list["heads"][tonumber(data.face)]
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(face), false, true, true)
-  else
-    local face = list_f["heads"][tonumber(data.face)]
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(face), false, true, true)
-  end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadEyes(target, data)
-  if IsPedMale(target) == 1 then
-    local eyes = list["eyes"][tonumber(data.eyecolor)]
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(eyes), false, true, true)
-  else
-    local eyes = list_f["eyes"][tonumber(data.eyecolor)]
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(eyes), false, true, true)
-  end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadBodySize(target, data)
-  if IsPedMale(target) == 1 then
-    Citizen.InvokeNative(0x1902C4CFCC5BE57C, target, BODY_TYPES[tonumber(data.bodysize)])
-  else
-    Citizen.InvokeNative(0x1902C4CFCC5BE57C, target, BODY_TYPES[tonumber(data.bodysize)])
-  end
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadFeatures(target, data, update)
-  local feature
-  for k, v in pairs(features_name) do
-    if not update then
-      Wait(5)
-    end
-    feature = features[k]
-    if data[v] ~= nil then
-      local value = data[v] / 100
-      Citizen.InvokeNative(0x5653AB26C82938CF, target, feature, value)
+      SetPedOutfitPreset(cPed, rMale)
     end
   end
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-function LoadHeight(target, data)
-  if data.height ~= nil then
-    --SetPedScale(target, tonumber(data.height / 100))
-    if IsPedMale(target) == 1 then
-      SetPedScale(target, tonumber(data.height/100))
-    else
-      SetPedScale(target, tonumber(data.height/100))
-    end
-  end
+function DoStartCam()
+  StartCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+  EndCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+  SetCamCoord(StartCam, -555.925,-3778.709,238.597)
+  SetCamRot(StartCam, -20.0, 0.0, 83)
+  SetCameraActive('StartCam', true)
+  RenderScriptCams(true, false, 1, true, true)
+  SetCamCoord(EndCam, -561.206,-3776.224,239.597)
+  SetCamRot(EndCam, -20.0, 0, 270.0)
+  SetCamActive(EndCam, true)
+  SetCamActiveWithInterp(EndCam, StartCam, 3900, true, true) Wait(3900)
+  CamInUse = EndCam
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-function FixIssues(target)
-  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, target, 0, 0)
-  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, target) do
-    Wait(0)
-  end
-  Citizen.InvokeNative(0x0BFA1BD465CDFEFD, target)
-  if IsPedMale(target) then
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list["BODIES_UPPER"][1]), false, true, true)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list["BODIES_LOWER"][1]), false, true, true)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list["heads"][1]), false, true, true)
-  else
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list_f["BODIES_UPPER"][1]), false, true, true)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list_f["BODIES_LOWER"][1]), false, true, true)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, target, tonumber(list_f["heads"][1]), false, true, true)
-  end
-  Citizen.InvokeNative(0xD710A5007C2AC539, target, 0x1D4C528A, 0)
-  Citizen.InvokeNative(0xD710A5007C2AC539, target, 0x3F1F01E5, 0)
-  Citizen.InvokeNative(0xD710A5007C2AC539, target, 0xDA0E2C55, 0)
-  Citizen.InvokeNative(0x704C908E9C405136, target)
-  Citizen.InvokeNative(0xCC8CA3E88256E58F, target, 0, 1, 1, 1, 0)
-end
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-function LoadOverlays(target, data)
-  if tonumber(data.eyebrows_t) ~= nil then
-    toggleOverlayChange("eyebrows", 1, tonumber(data.eyebrows_t), 0, 0, 0, 1.0, 0, tonumber(data.eyebrows_id), tonumber(data.eyebrows_c1), tonumber(data.eyebrows_c2), tonumber(data.eyebrows_c3), tonumber(0), tonumber(data.eyebrows_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.scars_t) ~= nil then
-    toggleOverlayChange("scars", 1, tonumber(data.scars_t), 0, 0, 1, 1.0, 0, tonumber(0), 0, 0, 0, tonumber(0), tonumber(data.scars_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.ageing_t) ~= nil then
-    toggleOverlayChange("ageing", 1, tonumber(data.ageing_t), 0, 0, 1, 1.0, 0, tonumber(0), 0, 0, 0, tonumber(0), tonumber(data.ageing_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.freckles_t) ~= nil then
-    toggleOverlayChange("freckles", 1, tonumber(data.freckles_t), 0, 0, 1, 1.0, 0, tonumber(0), 0, 0, 0, tonumber(0), tonumber(data.freckles_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.moles_t) ~= nil then
-    toggleOverlayChange("moles", 1, tonumber(data.moles_t), 0, 0, 1, 1.0, 0, tonumber(0), 0, 0, 0, tonumber(0), tonumber(data.moles_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.spots_t) ~= nil then
-    toggleOverlayChange("spots", 1, tonumber(data.spots_t), 0, 0, 1, 1.0, 0, tonumber(0), 0, 0, 0, tonumber(0), tonumber(data.spots_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.eyeliners_t) ~= nil then
-    toggleOverlayChange("eyeliners", 1, tonumber(1), 0, 0, 0, 1.0, 0, tonumber(data.eyeliners_id), tonumber(data.eyeliners_c1), tonumber(data.eyeliners_c2), tonumber(data.eyeliners_c3), tonumber(data.eyeliners_t), tonumber(data.eyeliners_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.shadows_t) ~= nil then
-    toggleOverlayChange("shadows", 1, tonumber(1), 0, 0, 0, 1.0, 0, tonumber(data.shadows_id), tonumber(data.shadows_c1), tonumber(data.shadows_c2), tonumber(data.shadows_c3), tonumber(data.shadows_t), tonumber(data.shadows_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.lipsticks_t) ~= nil then
-    toggleOverlayChange("lipsticks", 1, tonumber(1), 0, 0, 0, 1.0, 0, tonumber(data.lipsticks_id), tonumber(data.lipsticks_c1), tonumber(data.lipsticks_c2), tonumber(data.lipsticks_c3), tonumber(data.lipsticks_t), tonumber(data.lipsticks_op / 100), target)
-    Wait(50)
-  end
-  if tonumber(data.blush_t) ~= nil then
-    toggleOverlayChange("blush", 1, tonumber(data.blush_t), 0, 0, 0, 1.0, 0, tonumber(data.blush_id), tonumber(data.blush_c1), tonumber(data.blush_c2), tonumber(data.blush_c3), tonumber(0), tonumber(data.blush_op / 100), target)
+function CreatePedCams()
+  MaleCam   = { Cam = CreateCam("DEFAULT_SCRIPTED_CAMERA"), Pos = nil, Rot = nil }
+  FemaleCam = { Cam = CreateCam("DEFAULT_SCRIPTED_CAMERA"), Pos = nil, Rot = nil }
 
+  for k,v in pairs(NPCs) do
+    local Offset = GetCoords(v)
+    local Rotation = GetEntityRotation(v)
+    if (k == 1) then MaleCam.Pos, MaleCam.Rot = Offset, Rotation end
+    if (k == 2) then FemaleCam.Pos, FemaleCam.Rot = Offset, Rotation end
   end
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-function HasBodyComponentsLoaded (target, hair, beard)
-  local _target = target
-  local output = true
-  if
-  not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0x378AD10C)) or
-  not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0xEA24B45E)) or
-  not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0x823687F5)) or
-  not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0xB3966C9)) then
-    output = false
+function SetTheiMaps()
+  if not (iMapsSet) then
+    iMapsSet = true
+    RequestImap(-1699673416)
+    RequestImap(1679934574)
+    RequestImap(183712523)
   end
-  if hair and not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0x864B03AE)) then
-    output = false
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function SetCameraActive(Type, Bool)
+  if ((Type == 'StartCam') and (StartCam ~= nil))  then SetCamActive(StartCam, Bool) end
+  if ((Type == 'EndCam') and (EndCam ~= nil))  then SetCamActive(EndCam,  Bool) end
+  if ((Type == 'MaleCam') and (MaleCam ~= nil))  then SetCamActive(MaleCam.Cam,  Bool) end
+  if ((Type == 'FemaleCam') and (FemaleCam ~= nil))  then SetCamActive(FemaleCam.Cam,  Bool) end
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function SelectionCamera(Data, NPC, Gender, Type)
+  local x, y, z = 0.0, 0.0, 0.0
+  local Cam, Pos, Rot = Data.Cam, Data.Pos, Data.Rot
+
+  if (Up(Gender) == 'MP_MALE')   then x,y,z = -1.0, -0.5, 0.5 end
+  if (Up(Gender) == 'MP_FEMALE') then x,y,z = -1.0, 0.7, 0.5 end
+  if (Up(Gender) == 'MP_MALE')   then AttachCamToEntity(Cam, NPC, x,y,z) end
+  if (Up(Gender) == 'MP_FEMALE') then AttachCamToEntity(Cam, NPC, x,y,z) end
+  if (Up(Gender) == 'MP_MALE')   then SetCamRot(Cam, -4.0, 0, 300.0) end
+  if (Up(Gender) == 'MP_FEMALE') then SetCamRot(Cam, -4.0, 0, 230.0) end
+
+  if (Type == 'Body')  then x,y,z = -1.3, 0.0, 0.4  end
+  if (Type == 'Eyes')  then x,y,z = -0.3, 0.0, 0.6  end
+  if (Type == 'Teeth') then x,y,z = -0.3, 0.1, 0.6  end
+  if (Type == 'Face')  then x,y,z = -0.5, 0.0, 0.6  end
+  if (Type == 'Legs')  then x,y,z = -1.3, 0.0, -0.2 end
+
+  if (Up(Gender) == 'MP_MALE') then
+    if (Type == 'Body')  then AttachCamToEntity(Cam, NPC, x,y,z) SetCamRot(Cam, 0.0, 0, 270.0) end
+  else
+    if (Type == 'Body')  then AttachCamToEntity(Cam, NPC, x,y,z) SetCamRot(Cam, 0.0, 0, 270.0) end
   end
 
-  if beard and not Citizen.InvokeNative(0xFB4891BD7578CDC1, _target, tonumber(0xF8016BCA)) then
-    output = false
-  end
-  if not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, _target) then
-    output = false
-  end
-  return output
+  SetCamActiveWithInterp(Cam, CamInUse, 2400, true, true)
+  CamInUse = Cam
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-RegisterNetEvent('DokusCore:SkinCreator:Export:Torso', function(cb) return cb(torso) end)
-RegisterNetEvent('DokusCore:SkinCreator:Export:Legs', function(cb) return cb(legs) end)
-RegisterNetEvent('DokusCore:SkinCreator:Export:CompID', function(cb) return cb(components_data["beard"]) end)
-RegisterNetEvent('DokusCore:SkinCreator:Export:CompBody', function(cb) return cb({list, list_f}) end)
--- function GetTorso() return torso end
--- function GetLegs() return legs end
--- function GetComponentId(name) return components_data["beard"] end
--- function GetBodyComponents() return {list, list_f} end
+function ResetAllCameras()
+  if (StartCam ~= false)  then DestroyCam(StartCam, true)       StartCam = false   end
+  if (EndCam ~= false)    then DestroyCam(EndCam,  true)        EndCam  = false    end
+  if (MaleCam ~= false)   then DestroyCam(MaleCam.Cam,  true)   MaleCam  = false   end
+  if (FemaleCam ~= false) then DestroyCam(FemaleCam.Cam,  true) FemaleCam  = false end
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function ResetNPCModel(Gender)
+  local Ped = nil
+  if (Gender == 'MP_MALE') then Ped = NPCs[1] end
+  if (Gender == 'MP_FEMALE') then Ped = NPCs[2] end
+  Citizen.InvokeNative(0x77FF8D35EEC6BBC4, Ped, 0, 0)
+  while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, Ped) do Wait(0) end
+  Citizen.InvokeNative(0x0BFA1BD465CDFEFD, Ped) -- ResetPedComponents
+
+  if (Gender == 'MP_MALE') then
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Male['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Male['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Male['heads'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Male['eyes'], false, true, true) -- ApplyShopItemToPed
+  else
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Female['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Female['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Female['heads'], false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, Ped, _Skins.Looks.Default.Female['eyes'], false, true, true) -- ApplyShopItemToPed
+  end
+
+  -- Execute on all
+  Citizen.InvokeNative(0xD710A5007C2AC539, Ped, 0x1D4C528A, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, Ped, 0x3F1F01E5, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0xD710A5007C2AC539, Ped, 0xDA0E2C55, 0) -- ApplyShopItemToPed
+  Citizen.InvokeNative(0x704C908E9C405136, Ped) -- N_0x704c908e9c405136
+  Citizen.InvokeNative(0xCC8CA3E88256E58F, Ped, 0, 1, 1, 1, 0) --UpdatePedVariation
+
+  SetModelAsNoLongerNeeded(Gender)
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function Rotation(Dir)
+  local Ped = nil
+  if (MyGender == 'MP_MALE')   then Ped = NPCs[1] end
+  if (MyGender == 'MP_FEMALE') then Ped = NPCs[2] end
+  if (Ped ~= nil) then
+    local Rot = (GetEntityHeading(Ped) + Dir)
+    SetEntityHeading(Ped, (Rot % 360))
+  end
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function TabiDelKey(tab, val)
+  for i, v in ipairs (tab) do if (v.id == val) then tab[i] = nil end end
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function CustomCamera(Cam, Type)
+  CamPos = Type
+  local x, y, z = 0.0, 0.0, 0.0
+  if (Type == 'Body')  then x,y,z = -1.3, 0.0, 0.4  end
+  if (Type == 'Eyes')  then x,y,z = -0.3, 0.0, 0.6  end
+  if (Type == 'Teeth') then x,y,z = -0.3, 0.1, 0.6  end
+  if (Type == 'Face')  then x,y,z = -0.5, 0.0, 0.6  end
+  if (Type == 'Legs')  then x,y,z = -1.3, 0.0, -0.2 end
+
+  if (MyGender == 'MP_MALE')   then AttachCamToEntity(Cam, NPCs[1], x,y,z) end
+  if (MyGender == 'MP_FEMALE') then AttachCamToEntity(Cam, NPCs[2], x,y,z) end
+
+  SetCamRot(Cam, 0.0, 0, 270.0)
+  SetCamActiveWithInterp(Cam, CamInUse, 2400, true, true)
+  CamInUse = Cam
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function ResetScriptForNextUse()
+  for k,v in pairs(NPCs) do DeleteEntity(v) end
+  MyGender = nil
+  CharData = {}
+  CharData.Skin = {}
+  CharData.Face = {}
+  Prompt_Male        = nil
+  Prompt_Female      = nil
+  Prompt_Enter       = nil
+  Group = GetRandomIntInRange(0, 0xffffff)
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+function Error(Type)
+  if (Type == 'Age') then
+    SendNUIMessage({ Action = 'Hide' })
+    Notify("You've not set your characters age!") Wait(5000)
+    SendNUIMessage({ Action = 'Show' })
+  elseif (Type == 'Name') then
+    SendNUIMessage({ Action = 'Hide' })
+    Notify("You've not set your characters name!") Wait(5000)
+    SendNUIMessage({ Action = 'Show' })
+  end
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
