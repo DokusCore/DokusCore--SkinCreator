@@ -4,6 +4,7 @@
 ----------------------- I feel a disturbance in the force ----------------------
 --------------------------------------------------------------------------------
 RegisterNetEvent('DokusCore:Skins:Load:User', function()
+  local Core   = GetAttributeCoreValue(PedID(), 0)
   local Sync = TCTCC('DokusCore:Sync:Get:UserData')
   local CharID, Dec, Gender = Sync.CharID, Decoded(Sync.Skin), Sync.Gender
   local Skin = Decoded(Dec.Skin)
@@ -15,6 +16,7 @@ RegisterNetEvent('DokusCore:Skins:Load:User', function()
   FixIssues(PedID(), Gender)
   SetPedSkin(PedID(), Gender, Skin)
   SetModelAsNoLongerNeeded(Hash)
+  Citizen.InvokeNative(0xC6258F41D86676E0, PedID(), 0, Core)
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -32,8 +34,6 @@ end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 RegisterNetEvent('DokusCore:Skins:User:New', function(ID)
-  local SkinData = SetSkinData()
-  if (SkinData) then SkinDataSet = true end
   NetworkGhosting(PedID(), true)
   SetEntityVisible(PedID(), false)
   SetEntityCoords(PedID(), -561.206, -3776.224, 239.597)
@@ -44,6 +44,7 @@ RegisterNetEvent('DokusCore:Skins:User:New', function(ID)
   Wait(1000)
   UIFadeIn(500)
   DoStartCam() CreatePedCams()
+  TriggerEvent('DokusCore:Skins:SendWaring')
   TriggerEvent('DokusCore:Skins:Activate:Prompts', true)
 end)
 --------------------------------------------------------------------------------

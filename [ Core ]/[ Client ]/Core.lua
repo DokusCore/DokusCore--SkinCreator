@@ -35,6 +35,7 @@ CreateThread(function()
     while not FrameReady() do Wait(1000) end
     local Sync = TCTCC('DokusCore:Sync:Get:UserData')
     SteamID = Sync.SteamID
+    SetSkinData()
   end
 end)
 --------------------------------------------------------------------------------

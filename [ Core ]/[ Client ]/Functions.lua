@@ -50,11 +50,13 @@ function SetPedSkin(ID, Gender, Skin)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Head), false, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Beard), false, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Hair), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Eyes), false, true, true) -- ApplyShopItemToPed
   elseif (Up(Gender) == 'MP_FEMALE') then
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Torso), false, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Legs), false, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Head), false, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Hair), false, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ID, tonumber(Skin.Eyes), false, true, true) -- ApplyShopItemToPed
   end
 
   -- Execute on all
@@ -117,23 +119,31 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 function CreateNPCs()
+  print("Start to create NPCS")
+  local rMale   = _Skins.Outfits.Male[math.random(#_Skins.Outfits.Male)]
+  local rFemale = _Skins.Outfits.Female[math.random(#_Skins.Outfits.Female)]
+  print("Outfits chosen")
   for k,v in pairs(_Skins.PEDs) do
-    local rMale   = _Skins.Outfits.Male[math.random(#_Skins.Outfits.Male)]
-    local rFemale = _Skins.Outfits.Female[math.random(#_Skins.Outfits.Female)]
+    print("LoadModel")
     LoadModel(v.Gender)
     local cPed = CreatePed(v.Gender, v.x, v.y, v.z, v.h, false, 0)
+    print("Ped Created")
     Tabi(NPCs, cPed)
     Citizen.InvokeNative(0xED40380076A31506, cPed, v.Gender, false) --SetPlayerModel
     Citizen.InvokeNative(0x77FF8D35EEC6BBC4, cPed, 0, 0) --EquipPedOutfitPreset
-    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, cPed) do Wait(0) end -- IsPedReadyToRender
+    print("Is Ped ready to render")
+    -- while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, cPed) do print("No :(") Wait(100) end -- IsPedReadyToRender
+    print("Yes")
     Citizen.InvokeNative(0x0BFA1BD465CDFEFD, cPed) -- ResetPedComponents
 
     if IsPedMale(cPed) then
+      print("I am male")
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['heads'], false, true, true) -- ApplyShopItemToPed
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Male['eyes'], false, true, true) -- ApplyShopItemToPed
     else
+      print("I am female")
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['BODIES_UPPER'], false, true, true) -- ApplyShopItemToPed
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['BODIES_LOWER'], false, true, true) -- ApplyShopItemToPed
       Citizen.InvokeNative(0xD3A7B003ED343FD9, cPed, _Skins.Looks.Default.Female['heads'], false, true, true) -- ApplyShopItemToPed

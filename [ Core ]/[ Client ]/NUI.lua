@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 ----------------------- I feel a disturbance in the force ----------------------
 --------------------------------------------------------------------------------
-RegisterNUICallback('SetGender', function(Data) MyGender = Data.Gender end)
+RegisterNUICallback('SetGender', function(Data) print("Gender is iset") MyGender = Data.Gender end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 RegisterNUICallback('Rotation', function(Data)
@@ -319,15 +319,19 @@ RegisterNUICallback('CloseCreator', function()
   if (CharData.Name == nil) then Error('Name') return end
   if (CharData.Age  == nil) then Error('Age') return end
   local Skin = Encoded({ Skin = Encoded(CharData.Skin), Face = Encoded(CharData.Face) })
+  local Clothing = nil
   SendNUIMessage({ Action = 'Hide' })
   SetNuiFocus(false, false)
   UIFadeOut(5000) Wait(5000)
+
+  if (Low(MyGender) == 'mp_female') then Clothing = Encoded(_Skins.DefaultCloth.Female) end
+  if (Low(MyGender) == 'mp_male')   then Clothing = Encoded(_Skins.DefaultCloth.Male)   end
 
   TriggerServerEvent('DokusCore:Core:DBIns:Characters', { 'User', {
       SteamID, Sync.CharID, _Moderation.User, CharData.Name,
       Low(MyGender), CharData.Nationality, CharData.Age, _StartWealth.Money,
       _StartWealth.Gold, 0, 0, 'unemployed', 0,
-      '{"x":-167.89999389648438,"y":629.0999755859375,"z":114.0}', Skin, nil
+      '{"x":-167.89999389648438,"y":629.0999755859375,"z":114.0}', Skin, Clothing
     }
   }) Wait(3000)
 

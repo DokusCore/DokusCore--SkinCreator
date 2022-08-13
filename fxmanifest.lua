@@ -5,7 +5,7 @@ description 'DokusCore Skin Creator v2'
 author 'http://DokusCore.com'
 fx_version "adamant"
 games {"rdr3"}
-version '2.0.0'
+version '2.1.0'
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 server_scripts {
@@ -24,7 +24,6 @@ client_scripts {
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 shared_script {
-  -- 'Config.lua', -- For Development -- leave off!
   '@DokusCore/[ Core ]/[ System ]/[ Shared ]/CBSystem.lua',
   '@DokusCore/[ Configs ]/[ Core ]/Core.lua',
   '@DokusCore/[ Configs ]/[ Modules ]/Skins.lua',
