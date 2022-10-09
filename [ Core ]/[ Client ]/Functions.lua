@@ -327,17 +327,45 @@ end
 --------------------------------------------------------------------------------
 function Error(Type)
   if (Type == 'Age') then
-    SendNUIMessage({ Action = 'Hide' })
-    Notify("You've not set your characters age!") Wait(5000)
-    SendNUIMessage({ Action = 'Show' })
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters age!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
   elseif (Type == 'Name') then
-    SendNUIMessage({ Action = 'Hide' })
-    Notify("You've not set your characters name!") Wait(5000)
-    SendNUIMessage({ Action = 'Show' })
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters name!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Nationality') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters nationality!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Torso') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters torso type!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Legs') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters legs type!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Head') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters head type!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Eyes') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters eyes type!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
+  elseif (Type == 'Hair') then
+    DisplayHud(true) SendNUIMessage({ Action = 'Hide' })
+    NoteObjective("System", "You've not set your characters hair type!", 'Horn', 5000)
+    DisplayHud(false) SendNUIMessage({ Action = 'Show', Gender = MyGender })
   end
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+
+
+
+
 
 
 
